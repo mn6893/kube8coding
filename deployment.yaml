@@ -1,9 +1,8 @@
+# nodejs-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubenodejs-deployment
-  labels:
-    app: kubenodejs
+  name: kubenodejs
 spec:
   replicas: 2
   selector:
@@ -15,7 +14,40 @@ spec:
         app: kubenodejs
     spec:
       containers:
-      - name: nodejs-container
-        image: nadheemaven/kubenodejs:latest
-        ports:
-        - containerPort: 3000
+        - name: nodejs-container
+          image: nadheemaven/kubenodejs:pgsqldbv1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nodejs-config
+                  key: DATABASE_HOST
+            - name: DATABASE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: nodejs-config
+                  key: DATABASE_USER
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: nodejs-config
+                  key: DATABASE_PASSWORD
+            - name: DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: nodejs-config
+                  key: DATABASE_NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubenodejs-dbservice
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: kubenodejs
+  type: LoadBalancer
