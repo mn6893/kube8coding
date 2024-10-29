@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubenodejs-deployment
+  labels:
+    app: kubenodejs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubenodejs
+  template:
+    metadata:
+      labels:
+        app: kubenodejs
+    spec:
+      containers:
+      - name: nodejs-container
+        image: nadheemaven/kubenodejs:latest
+        ports:
+        - containerPort: 3000
