@@ -3,7 +3,7 @@ name: Deploy Spring Boot + MySQL
 on:
   push:
     branches:
-      - kube-springboot  # <<--- important: your branch name new (you can change)
+      - kube-springboot  # <<--- important: your branch name (you can change)
 
 jobs:
   build-and-deploy:
