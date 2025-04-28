@@ -39,7 +39,7 @@ services:
       
  # ─────────────────────── Spring Boot API ───────────────────────
   reactcrud-app:
-    image: react-crud:latest      # ← name of the image you built/pulled
+    image: react-crud:v1      # ← name of the image you built/pulled
     container_name: reactcrud-app
     restart: unless-stopped
     environment:
