@@ -1,0 +1,32 @@
+name: Deploy Spring Boot + MySQL
+
+on:
+  push:
+    branches:
+      - kube-springboot  # <<--- important: your branch name (you can change)
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted   # runs on your Linux server
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Spring Boot application
+        run: |
+          mvn clean package -DskipTests
+
+      - name: Stop Old Containers
+        run: |
+          docker-compose down || true
+
+      - name: Build & Deploy with Docker Compose
+        run: |
+          docker-compose up --build -d

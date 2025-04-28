@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+# ──────────────────────────── MySQL ────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: crud_app
+      MYSQL_USER: cruduser
+      MYSQL_PASSWORD: admin123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - backend
+
+# ─────────────────────── Spring Boot API ───────────────────────
+  springboot-app:
+    image: springboot-crud:latest      # ← name of the image you built/pulled
+    container_name: springboot-app
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/crud_app
+      SPRING_DATASOURCE_USERNAME: cruduser
+      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_WEB_CORS_ALLOWED_ORIGINS: http://localhost:3000
+      # Optional: expose MySQL timezone or JPA settings here
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - backend
+      - frontend
+      
+ # ─────────────────────── Spring Boot API ───────────────────────
+  reactcrud-app:
+    image: react-crud:latest      # ← name of the image you built/pulled
+    container_name: reactcrud-app
+    restart: unless-stopped
+    environment:
+      REACT_APP_API_BASE: http://api:8080
+      # Optional: expose MySQL timezone or JPA settings here
+    ports:
+      - "80:80"
+    depends_on:
+      - springboot-app
+    networks:
+      - frontend
+
+# ────────────────────────── Named volume ───────────────────────
+volumes:
+  mysql-data:
+
+# ─────────────────────────── Network  ──────────────────────────
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
